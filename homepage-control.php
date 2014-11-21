@@ -3,7 +3,7 @@
  * Plugin Name: Homepage Control
  * Plugin URI: http://www.woothemes.com/products/homepage-control/
  * Description: Hi! I'm here to assist you with re-ordering or disabling components of your theme's homepage design.
- * Version: 1.0.0
+ * Version: 1.0.1
  * Author: WooThemes
  * Author URI: http://woothemes.com/
  * Requires at least: 3.8.1
@@ -230,7 +230,15 @@ final class Homepage_Control {
 			if ( 0 < count( $components ) ) {
 				$count = 5;
 				foreach ( $components as $k => $v ) {
-					add_action( $this->hook, esc_attr( $v ), $count );
+					if (strpos( $v, '@' ) !== FALSE) {
+						$obj_v = explode( '@' , $v );
+						if ( class_exists( $obj_v[0] ) && method_exists( $obj_v[0], $obj_v[1] ) ) {
+							add_action( $this->hook, array( $obj_v[0], $obj_v[1] ), $count );
+						} // End If Statement
+					} else {
+						add_action( $this->hook, esc_attr( $v ), $count );
+					} // End If Statement
+
 					$count + 5;
 				}
 			}
